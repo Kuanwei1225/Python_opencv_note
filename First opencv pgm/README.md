@@ -16,3 +16,11 @@
 3.等待鍵盤輸入，若沒這指令會瞬間顯示後關掉，而不會卡住</br>
 <pre><code>cv2.waitKey(0)
 </pre></code></br>
+
+4.複製圖片
+<pre><code>myImg = img.copy()
+</pre></code></br>
+
+5.存檔
+<pre><code>cv2.imwrite('../testSave.jpg', myImg)
+</pre></code></br>
