@@ -12,3 +12,5 @@ cv2.imshow('Display image', img)
 
 # show the image until any keybroad input
 cv2.waitKey(0)
+
+cv2.destroyAllWindows()

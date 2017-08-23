@@ -22,3 +22,8 @@ visual studio可簡單支援不同的python執行環境</br>
 6.執行
 
     import cv2
+
+---
+在本專案的練習都是來自
+
+<http://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html>
