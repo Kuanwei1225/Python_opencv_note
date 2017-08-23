@@ -71,8 +71,41 @@ plt.yticks([])
 plt.show()
 ```
 
+----
+## 讀取影片
 
+使用`VideoCapture`物件來抓取影片，指定影片則輸入路徑若無則輸入`0`，輸入`0`時代表影片來源為攝影機。
 
+```
+cap = cv2.VideoCapture('./MyVideo')
+```
+
+再撥出之前可確認初始化是否完成，使用`cap.isOpened()`。
+
+可使用`cap.get(3)`與`cap.get(4)`獲得長寬比，使用攝影機時可利用` ret = cap.set(3, 320)`與` ret = cap.set(4, 620)`設定畫質。
+
+```
+import cv2
+import numpy as np
+
+cap = cv2.VideoCapture('test.avi')
+
+while(cap.isOpened()):
+    ret, frame = cap.read()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    cv2.imshow('frame', gray)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+    
+cap.release()
+cv2.destroyAllWindows()
+```
+
+使用迴圈包住，如此可撥出影片。值得注意的是`cv2.COLOR_BGR2GRAY`可更改，但有時影片不支援或不明原因有些模式會無法使用。
+
+----
+## 影片存檔
 
 
 
