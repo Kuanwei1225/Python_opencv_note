@@ -19,4 +19,11 @@ visual studio可簡單支援不同的python執行環境</br>
 5.搜尋"opencv-python"並安裝</br>
 <img src="../../blob/master/img/keyword.jpg" width = "50%" height = "60%"></br>
 
-6.執行"import cv2"
+6.執行
+
+    import cv2
+
+---
+在本專案的練習都是來自
+
+<http://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html>
