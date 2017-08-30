@@ -4,7 +4,7 @@
 
 ## Mouse brush
 
-定義背景函式，在此輸入參數會由系統自動填入，若缺少會不能執行。事件有很多選想可以選。在實作時`EVENT_LBUTTONDBLCLK`做不太出來，因此改為`EVENT_MOUSEMOVE`，之後可以多試試。
+定義背景函式，在此輸入參數會由系統自動填入，若缺少會不能執行。事件有很多選項可以選。在實作時`EVENT_LBUTTONDBLCLK`做不太出來，因此改為`EVENT_MOUSEMOVE`，之後可以多試試。
 
 ```
 def draw_circle(event, x, y, flags, param ):
