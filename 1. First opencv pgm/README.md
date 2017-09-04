@@ -107,6 +107,60 @@ cv2.destroyAllWindows()
 ----
 ## 影片存檔
 
+---
+
+## Core operation
+
+在此介紹一些opencv的核心運算。
+
+### 存取特定像素
+
+得到RGB值
+
+```
+pix = img[100, 100]
+print(pix)
+```
+
+得到藍色值
+
+(100, 100)為象素
+
+```
+blue = img[100, 100, 0]
+print(blue)
+```
+
+直接存取
+
+```
+img[100, 100] = [255, 255, 255]
+```
+
+## 複製其中一塊並貼上
+
+```
+block = img[100:150, 200:250] # copy
+img[300:350, 450:500] = block # paste
+```
+
+### 分離與融合出BGR
+
+```
+b, g, r = cv2.split(img)
+img = cv2.merge((b, g, r))
+```
+
+or
+
+```
+b = img[:, :, 0]
+```
+
+
+
+
+
 
 
 
