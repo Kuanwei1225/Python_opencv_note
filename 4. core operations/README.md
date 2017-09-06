@@ -102,6 +102,7 @@ logo = img1[0:rows, 0:cols]
 ```
 imgGray = cv2.cvtColor(imgLogo, cv2.COLOR_BGR2GRAY)
 ret, mask = cv2.threshold(imgGray, 150, 255, cv2.THRESH_BINARY)```
+```
 
 介紹一下位元運算函示
 
