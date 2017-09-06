@@ -113,7 +113,7 @@ ret, mask = cv2.threshold(imgGray, 150, 255, cv2.THRESH_BINARY)```
 bitwise_and(src1, src2, dst=None, mask=None)
 ```
 
-用以下手法去背
+用以下手法去背，要注意遮照順序。
 
 ```
 mask_inver = cv2.bitwise_not(mask)
