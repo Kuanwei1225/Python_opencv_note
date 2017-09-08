@@ -61,7 +61,7 @@ b = img[:, :, 0]
 [4]
 ```
 
-## 圖片混和()Blending)
+## 圖片混和(Blending)
 
 將不同權重圖片混和，其概念如下式所示，α介於0~1之間。
 
@@ -129,6 +129,38 @@ dst = cv2.add(img1_bg, imgLogo_fg)
 ```
 img1[0:rows, 0:cols] = dst
 ```
+
+---
+
+## 計算程式效率
+
+在此介紹一些計算程式執行時間APIs語最佳化之方法。
+
+計算經過多少tick後除時脈就可以得到執行時間。
+
+```
+e1 = cv2.getTickCount()
+# your code execution
+e2 = cv2.getTickCount()
+time = (e2 - e1)/ cv2.getTickFrequency()
+```
+
+## 增加程式效率的小技巧
+
+1. 在Python中減少使用迴圈，特別是double/triple之型別。
+
+2. 使用向量時盡量使用numpy與opencv之API，因為有最佳化過。
+
+3. 注意快取。
+
+4. 最好不要複製陣列，他是一個消耗很高的指令。
+
+
+
+
+
+
+
 
 
 
