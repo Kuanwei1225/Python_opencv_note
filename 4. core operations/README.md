@@ -84,6 +84,8 @@ dst = cv2.addWeighted(img1, 0.7, img2, 0.3, 0)
 
 這是一個Tuple的資料結構宣告，將圖檔img丟入函示，閥值會存入ret變數，處理後的資料存入thresh變數，更詳細的函示說明與參數運用可參考 <http://monkeycoding.com/?p=593>
 
+<http://docs.opencv.org/3.1.0/d7/d4d/tutorial_py_thresholding.html>
+
 -----
 
 ## 位元運算
@@ -104,7 +106,7 @@ imgGray = cv2.cvtColor(imgLogo, cv2.COLOR_BGR2GRAY)
 ret, mask = cv2.threshold(imgGray, 150, 255, cv2.THRESH_BINARY)```
 ```
 
-介紹一下位元運算函示
+介紹一下位元運算函式
 
 @ param src1, src2：兩個要進行位元運算的來源圖
 @ param dst：output
@@ -154,6 +156,13 @@ time = (e2 - e1)/ cv2.getTickFrequency()
 3. 注意快取。
 
 4. 最好不要複製陣列，他是一個消耗很高的指令。
+
+---
+
+## test.py
+
+這個程式結合兩張圖片logo與 img1，利用灰階與二質化製造出遮罩，再利用邏輯運算將logo背部替換成一部分的img1，最後直接取代部分img1。成果就是將logo去背印在圖片上。
+
 
 
 
