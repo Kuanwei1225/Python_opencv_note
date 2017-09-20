@@ -74,7 +74,7 @@ blur = cv2.GaussianBlur(img,(5,5),0)
 ret3, th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 ```
 
-要了解其原理必須知道許多影像處理重要的概念，如像素直方圖、變異數等。Otsu是以像素直方圖為基準找出閥值，此演算法不僅可用於影像處理，只要在`決定門檻直`的情況都能使用。
+要了解其原理必須知道許多影像處理重要的概念，如像素直方圖、變異數等。Otsu是以像素直方圖為基準找出閥值，此演算法不僅可用於影像處理，只要在`決定門檻值`的情況都能使用。
 
 詳細的原理可參考與google Otsu
 
@@ -84,7 +84,43 @@ ret3, th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
 ## Filter
 
-在one dimensional 之訊號，有低通與高通濾波器。低通幫助去除雜訊、高通用於尋找邊緣。
+在one dimensional 之訊號，有低通與高通濾波器。低通幫助去除雜訊、高通用於強化邊緣。
+
+### 原理與動作
+
+濾波器又稱為遮罩(mask)、kernel，為一個單數矩陣(3x3, 5x5....)。首先將矩陣對應到的像素乘上矩陣相對應的權重後相加，最後除上X後替代中間的值，其中X為矩陣上所有的權重相加。原理簡單，詳情可搜尋網路有很多圖形範例。
+
+矩陣越大，平滑、去雜訊效果越明顯，但也會造成影像越模糊。這裡有個範例，建一5x5的矩陣其數值都為1，將數值相加後為25故最後除25，將此矩陣帶入函式即可完成濾波。
+
+```
+kernel = np.ones((5,5),np.float32)/25
+dst = cv2.filter2D(img,-1,kernel)
+```
+
+### 影像模糊化(Blur)
+
+為了消除雜訊，有時會利用模糊化的技術。這其實就是一種低通濾波器，簡單分為四種形式
+
+1. Averaging：一般的低通濾波器。
+2. Gaussian Blurring：以高斯式代替一般式，其矩陣組成之中心有最大值，依常態分佈向四周下降。
+3. Median Blurring：演算法與一般濾波演算不一樣，將kernel覆蓋的圖像的值依順序排列，中位數取代圖像中間的值。
+4. Bilateral Filtering：雙邊濾波器，保留邊緣，也就是顏色差異太大就不模糊。
+
+在opencv中使用方法為
+
+```
+img = cv2.imread('my_image.jpg')
+blur = cv2.blur(img, (5, 5))
+blur = cv2.GaussianBlur(img, (5, 5), 0)
+median = cv2.medianBlur(img, 5)
+blur = cv2.bilateralFilter(img, 9, 75, 75)
+```
+
+GaussianBlur的輸入參數0為`標準差`(分佈的坡度)，輸入0為系統自動；medianBlur的輸入參數5單純指這是5x5的`矩陣`；bilateralFilter第一個參數是`矩陣大小`、第二個為`像素色差標準差`，越大代表考慮更多顏色、最後為`空間標準差`越大表越遠的像素權值會變大，這其實與高斯濾波很像，但在此須考慮顏色與距離兩種標準差，而高斯濾波只考慮距離一種。
+
+
+
+
 
 
 
