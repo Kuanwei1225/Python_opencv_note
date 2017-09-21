@@ -118,6 +118,70 @@ blur = cv2.bilateralFilter(img, 9, 75, 75)
 
 GaussianBlur的輸入參數0為`標準差`(分佈的坡度)，輸入0為系統自動；medianBlur的輸入參數5單純指這是5x5的`矩陣`；bilateralFilter第一個參數是`矩陣大小`、第二個為`像素色差標準差`，越大代表考慮更多顏色、最後為`空間標準差`越大表越遠的像素權值會變大，這其實與高斯濾波很像，但在此須考慮顏色與距離兩種標準差，而高斯濾波只考慮距離一種。
 
+---
+
+## 影像形態學(Morphological)
+
+有些時候為了處理邊緣、雜訊與凸顯影像特徵的問題會使用這種方法，分別為
+
+1. 侵蝕(Erosion)：減少原有資料，可用於去除雜訊。其原理為kernel內所有值是1就是1，否則會轉為0。
+2. 膨脹(Dilation)：擴張原始資料，邊界效果增強。原理和侵蝕相反。
+3. 斷開(Opening)：先侵蝕後膨脹。
+4. 閉合(Closing)：先膨脹後侵蝕。
+5. 型態梯度(Morphological Gradient)：用於強化邊緣。原理為侵蝕與膨脹之差(different)。
+6. Top Hat：多用於被光影所影響的細節。其原理為原圖與膨脹之差。
+7. Black Hat：分離比鄰近案的區塊，強化陰影輪廓。做法是取原圖與陰影的差。
+
+在opencv中須先建立一個矩陣(kernel)才能帶入函式使用。首先是侵蝕與膨脹，迭代次數越多效果越明顯。
+
+```
+kernel = np.ones((5, 5), np.uint8)
+erosion = cv2.erode(img, kernel, iterations = 1)
+dilation = cv2.dilate(img, kernel, iterations = 1)
+```
+
+之後的一起看，使用相同函式只是第二個輸入參數不同。
+
+```
+opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+# Morphological Gradient
+gradient = cv2.morphologyEx(img, cv2.MORPH_GRADIENT, kernel)
+tophat = cv2.morphologyEx(img, cv2.MORPH_TOPHAT, kernel)
+blackhat = cv2.morphologyEx(img, cv2.MORPH_BLACKHAT, kernel)
+```
+
+因kernel大小與形狀會影響輸出效果，opencv提供一些矩陣形狀讓使用者選擇不同效果，要使用必須import Numpy
+
+```
+# Rectangular Kernel
+>>> cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
+array([[1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1]], dtype=uint8)
+# Elliptical Kernel
+>>> cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+array([[0, 0, 1, 0, 0],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [0, 0, 1, 0, 0]], dtype=uint8)
+# Cross-shaped Kernel
+>>> cv2.getStructuringElement(cv2.MORPH_CROSS,(5,5))
+array([[0, 0, 1, 0, 0],
+         [0, 0, 1, 0, 0],
+         [1, 1, 1, 1, 1],
+         [0, 0, 1, 0, 0],
+         [0, 0, 1, 0, 0]], dtype=uint8)
+```
+
+
+
+
+
+
 
 
 
