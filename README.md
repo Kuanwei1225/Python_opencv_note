@@ -26,4 +26,4 @@ visual studio可簡單支援不同的python執行環境</br>
 ---
 在本專案的練習都是來自
 
-<http://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html>
+<http://docs.opencv.org/3.3.0/d6/d00/tutorial_py_root.html>

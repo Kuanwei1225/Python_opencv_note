@@ -48,7 +48,7 @@ HSB和RGB可互相轉換，可以多找一下轉換公式，這裡不多提
 
 ## 再論Threshold
 
-二值化可說是影像處理相當重要的環節，在之前的使用上是以固定閥值的方式，但opencv提供另外一種適應性閥值(Adaptive Thresholding)函式`cv2.ADAPTIVE_THRESH_MEAN_C`與 `cv2.ADAPTIVE_THRESH_GAUSSIAN_C `。
+二值化可說是影像處理相當重要的環節，在之前的使用上是以固定閥值的方式，但opencv提供另外一種適應性閥值(Adaptive Thresholding)函式`cv2.ADAPTIVE_THRESH_MEAN_C`與 `cv2.ADAPTIVE_THRESH_GAUSSIAN_C `。在陰影處理上，若是固定閥值會誤判陰影部分，用此方法會較容易去除此影響。
 
 ```
 th2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
@@ -157,25 +157,95 @@ blackhat = cv2.morphologyEx(img, cv2.MORPH_BLACKHAT, kernel)
 # Rectangular Kernel
 >>> cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
 array([[1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1]], dtype=uint8)
+       [1, 1, 1, 1, 1],
+       [1, 1, 1, 1, 1],
+       [1, 1, 1, 1, 1],
+       [1, 1, 1, 1, 1]], dtype=uint8)
 # Elliptical Kernel
 >>> cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 array([[0, 0, 1, 0, 0],
-          [1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1],
-          [0, 0, 1, 0, 0]], dtype=uint8)
+       [1, 1, 1, 1, 1],
+       [1, 1, 1, 1, 1],
+       [1, 1, 1, 1, 1],
+       [0, 0, 1, 0, 0]], dtype=uint8)
 # Cross-shaped Kernel
 >>> cv2.getStructuringElement(cv2.MORPH_CROSS,(5,5))
 array([[0, 0, 1, 0, 0],
-         [0, 0, 1, 0, 0],
-         [1, 1, 1, 1, 1],
-         [0, 0, 1, 0, 0],
-         [0, 0, 1, 0, 0]], dtype=uint8)
+       [0, 0, 1, 0, 0],
+       [1, 1, 1, 1, 1],
+       [0, 0, 1, 0, 0],
+       [0, 0, 1, 0, 0]], dtype=uint8)
 ```
+
+---
+
+## 梯度
+
+取得邊緣一直是重要課題，當灰階值有劇烈變化時就會認為他為邊緣。常用的方法為取梯度，計算方法為kernel對應到的格子內數值相減，若超過閥值便判斷為邊緣。常用的1st 微分為Sobel operator，可藉由不同的kernel 排列來找出垂直或水平的邊緣，kernel與影像作旋積後可得到X軸的梯度與Y軸的梯度將兩者用歐式距離相加即可得到邊緣，算出來的結果可能為負。第二個參數維影像深度、第三第四分別為對x軸偏微分與對y軸之偏微分。只對一軸偏微分表只取橫向(或縱向)之邊緣。
+
+```
+sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
+sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)
+```
+
+###  Laplacian Derivatives
+
+使用Laplace運算子來搜尋邊界，若沿著x軸的一次微分可寫成
+
+```
+df = f(x+1, y) - f(x, y)
+```
+
+再一次微分，也就是兩次可寫成
+
+```
+d2fx = [ f(x+2, y) - f(x+1, y) ] - [f(x+1, y) - f(x, y)]
+    = f(x+2, y) - 2f(x+1, y) + f(x, y)
+while x = x + 1 change the equation
+    =f(x+1, y) - 2f(x, y) + f(x-1, y)
+```
+
+得到兩次偏微分，同理可求對y軸偏微分。最後帶入拉普拉斯運算式即可。將其向x、y軸展開，可以近似於<http://docs.opencv.org/3.3.0/d5/d0f/tutorial_py_gradients.html>的kernel形式，最後將kernel與影像旋積(convelution)。
+
+```
+laplacian = cv2.Laplacian(img,cv2.CV_64F)
+```
+
+在此有一點須注意，當你輸出圖像深度為CV_8F，也就是uint8時。因為在判斷邊緣時使用梯度(斜率)，其值有可能為負(白-黑)，此時負值會變為0在圖面上無法顯示，因此會偵測不到。
+
+---
+
+## Canny Edge Detection 
+
+找邊緣常與雜訊作取捨，此種方法先使用高斯平滑去除雜訊後再找邊緣，有較佳的效果，其步驟為(自我了解，這東西非常複雜)
+
+1. 使用高斯平滑去除雜訊
+2. 使用一階梯度找邊緣(Sobel, Roberts)找出強度與方向。
+3. 非最大值抑制，也就是說若該點為區域最大值那他很有可能就是邊緣，此時留下最大值數據，其餘歸零。
+4. 跟蹤邊緣，假設由上步驟算出來的值位於大於max threshold，那可稱之為邊緣；若在max threshold與min threshold之間，而前後為邊緣，那他也是邊緣；雖然他在max threshold與min threshold之間但前後不為邊緣，那他不是邊緣。
+
+在opencv可使用`cv2.Canny`達成。第一個參數為`原始圖片`、2跟3為`閥值的上下限`。
+
+```
+img = cv2.imread('picture.jpg',0)
+edges = cv2.Canny(img, 100, 200)
+```
+
+---
+
+## 影像金字塔(Image Pyramids)
+
+有時候需要影像的不同解析度，比如說要搜尋某些圖片時，因為不知道原始圖片的解析度，若直接開啟將會很耗時間，所以會使用這種同圖片不同解析度的方式稱為影像金字塔(Image Pyramids)。影像金字塔有兩種形式
+
+1. Gaussian Pyramid
+2. Laplacian Pyramids
+
+
+
+
+
+
+
 
 
 
