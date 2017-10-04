@@ -235,14 +235,42 @@ edges = cv2.Canny(img, 100, 200)
 
 ## 影像金字塔(Image Pyramids)
 
-有時候需要影像的不同解析度，比如說要搜尋某些圖片時，因為不知道原始圖片的解析度，若直接開啟將會很耗時間，所以會使用這種同圖片不同解析度的方式稱為影像金字塔(Image Pyramids)。影像金字塔有兩種形式
+有時候需要影像的不同解析度，比如說要搜尋某些圖片時，因為不知道原始圖片的大小，藉由比較多維圖片防止內容與圖片上大小不同，所以會使用這種同圖片不同解析度的方式稱為影像金字塔(Image Pyramids)。影像金字塔有兩種形式
 
-1. Gaussian Pyramid
-2. Laplacian Pyramids
+1. Gaussian Pyramid：使用高斯模糊後將影像長與寬縮小(或放大)2倍(二分之一取樣)。但還是表示同樣範圍。
+2. Laplacian Pyramids：先用得到高斯金字塔後比較這層與上一層，得到高頻數據(多是邊緣)，而其餘資料都為0，多用於影像壓縮。
 
+opencv之用法，參數就是要建成金字塔之圖片，值得注意的是取樣會失去部分資訊，因此再放大也不會得到原始圖片。
 
+```
+img = cv2.imread('img.jpg')
+lower_reso = cv2.pyrDown(higher_reso)
+higher_reso2 = cv2.pyrUp(lower_reso)
+```
 
+laplacian金字塔並沒有相對應的函式，所以可以這麼做
 
+```
+img = cv2.imread('picture.jpg')
+# create a guass pyramids
+cc = img.copy()
+arr = [cc]
+for i in range(6):
+    cc = cv2.pyrDown(cc)
+    arr.append(cc)
+## create laplacian pyramids
+lp = [arr[5]]
+for i in range(5, 0, -1):
+    gg = cv2.pyrUp(arr[i])  # get upper level
+    L = cv2.subtract(arr[i-1], gg) # calculate laplacian
+    lp.append(L)
+```
+
+要注意的是，因up level是計算出來的，有時候會因解析度不相符而無法相減。
+
+ps. 延伸：影像融合<http://docs.opencv.org/3.3.0/dc/dff/tutorial_py_pyramids.html>
+
+---
 
 
 
