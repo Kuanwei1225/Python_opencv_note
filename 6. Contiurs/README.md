@@ -11,3 +11,5 @@ im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APP
 ```
 cv2.drawContours(img, contours, -1, (0,255,0), 3)
 ```
+
+有時圖形較簡單，並不需要將全部的點都找出只需列出關鍵的即可，這樣也可以節省記憶體，這也是`cv2.CHAIN_APPROX_SIMPLE`做的，若圖形複雜可使用`cv2.CHAIN_APPROX_NONE`。
