@@ -13,3 +13,28 @@ cv2.drawContours(img, contours, -1, (0,255,0), 3)
 ```
 
 有時圖形較簡單，並不需要將全部的點都找出只需列出關鍵的即可，這樣也可以節省記憶體，這也是`cv2.CHAIN_APPROX_SIMPLE`做的，若圖形複雜可使用`cv2.CHAIN_APPROX_NONE`。
+
+---
+
+## Moment (影像形狀)
+
+使用`cv2.moments() `便可計算形狀，輸出為一串數字描述形狀詳細可參考<https://en.wikipedia.org/wiki/Image_moment>。下面範例中重點是要得到黑白圖，使用輪廓減少複雜度。
+
+```
+import cv2
+import numpy as np
+
+# Load video
+img = cv2.imread('../img/contour_img.jpg')
+
+imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+ret, thresh = cv2.threshold(imgray, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+# only use the first contours
+cnt = contours[0]
+M = cv2.moments(cnt)
+print(M)
+```
+
+
+
